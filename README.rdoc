@@ -1,0 +1,13 @@
+= guard_against_physical_delete
+guard_against_physical_delete is monkey patch for ActiveRecord.
+This patch prevent deleting record physically.
+set logical delete column name. (default is :deleted_at)
+  Logical.logical_delete_column = :removed_at
+  Logical.first.delete #=> raise GuardAgainstPhysicalDelete::PhysicalDeleteError
+  Logical.physical_delete { Logical.first.delete } #=> allow physical_delete
+
+== Copyright
+
+Copyright (c) 2012 morita shingo. See License.txt fo
+further details.
+
