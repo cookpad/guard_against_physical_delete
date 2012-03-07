@@ -9,12 +9,11 @@ module GuardAgainstPhysicalDelete
     end
 
     module ClassMethods
-      def physical_delete(&block)
-        Thread.current['physical_delete'] ||= Hash.new { |h,k| h[k] = 0 }
-        Thread.current['physical_delete'][self.name] += 1
+      def physical_delete
+        physical_delete_permission[self.name] += 1
         yield
       ensure
-        Thread.current['physical_delete'][self.name] -= 1
+        physical_delete_permission[self.name] -= 1
       end
 
       def is_logical_delete?
@@ -23,10 +22,18 @@ module GuardAgainstPhysicalDelete
       end
 
       def delete_permitted?
-        Thread.current['physical_delete'] ||= Hash.new { |h,k| h[k] = 0 }
-        return true unless Thread.current['physical_delete'][self.name].zero?
+        return true unless physical_delete_permission[self.name].zero?
         return false if is_logical_delete?
         return true
+      end
+
+      private
+
+      THREAD_LOCAL_KEY = '__GuardAgainstPhysicalDelete__thread_local_permission__'.freeze
+      private_constant :THREAD_LOCAL_KEY if RUBY_VERSION >= '1.9.3'
+
+      def physical_delete_permission
+        Thread.current[THREAD_LOCAL_KEY] ||= Hash.new { |h,k| h[k] = 0 }
       end
     end
   end
