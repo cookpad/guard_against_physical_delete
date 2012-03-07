@@ -1,7 +1,7 @@
 require 'active_record'
 require 'database_cleaner'
 
-::ActiveRecord::Base.configurations = {'test' => {:adapter => 'sqlite3', :database => ':memory:shared'}}
+::ActiveRecord::Base.configurations = {'test' => {:adapter => 'sqlite3', :database => "test.db"}}
 ::ActiveRecord::Base.establish_connection('test')
 
 class Logical < ::ActiveRecord::Base
