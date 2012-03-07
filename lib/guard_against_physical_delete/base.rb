@@ -10,12 +10,11 @@ module GuardAgainstPhysicalDelete
 
     module ClassMethods
       def physical_delete(&block)
-        Thread.current['physical_delete'] ||= {}
-        Thread.current['physical_delete'][self.name] = true
+        Thread.current['physical_delete'] ||= Hash.new { |h,k| h[k] = 0 }
+        Thread.current['physical_delete'][self.name] += 1
         yield
       ensure
-        Thread.current['physical_delete'] ||= {}
-        Thread.current['physical_delete'][self.name] = false
+        Thread.current['physical_delete'][self.name] -= 1
       end
 
       def is_logical_delete?
@@ -24,8 +23,8 @@ module GuardAgainstPhysicalDelete
       end
 
       def delete_permitted?
-        Thread.current['physical_delete'] ||= {}
-        return true if Thread.current['physical_delete'][self.name] 
+        Thread.current['physical_delete'] ||= Hash.new { |h,k| h[k] = 0 }
+        return true unless Thread.current['physical_delete'][self.name].zero?
         return false if is_logical_delete?
         return true
       end

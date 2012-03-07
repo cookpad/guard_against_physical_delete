@@ -25,6 +25,15 @@ describe "Guard against physical delete" do
       end
     end
 
+    it 'nested permit delete' do
+      Logical.physical_delete do
+        Logical.physical_delete do
+          expect { logical.delete }.to_not raise_exception
+        end
+        expect { logical2.delete }.to_not raise_exception
+      end
+    end
+
     it 'permit with thread' do
       threads = []
       mutex = Mutex.new
