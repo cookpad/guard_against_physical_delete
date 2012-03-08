@@ -16,20 +16,19 @@ module GuardAgainstPhysicalDelete
         physical_delete_permission[self.name] -= 1
       end
 
-      def is_logical_delete?
-        return true if self.column_names.include?(logical_delete_column.to_s)
-        return false
+      def logical_delete?
+        self.column_names.include? logical_delete_column.to_s
       end
 
       def delete_permitted?
         return true unless physical_delete_permission[self.name].zero?
-        return false if is_logical_delete?
+        return false if logical_delete?
         return true
       end
 
       private
 
-      THREAD_LOCAL_KEY = '__GuardAgainstPhysicalDelete__thread_local_permission__'.freeze
+      THREAD_LOCAL_KEY = :__GuardAgainstPhysicalDelete__thread_local_permission__
       private_constant :THREAD_LOCAL_KEY if RUBY_VERSION >= '1.9.3'
 
       def physical_delete_permission
