@@ -16,4 +16,5 @@ group :development do
 
   gem 'rspec'
   gem 'simplecov', :platforms => :ruby_19
+  gem 'countdownlatch'
 end

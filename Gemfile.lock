@@ -14,6 +14,7 @@ GEM
       multi_json (~> 1.0)
     arel (3.0.0)
     builder (3.0.0)
+    countdownlatch (1.0.0)
     database_cleaner (0.7.1)
     diff-lcs (1.1.3)
     git (1.2.5)
@@ -49,6 +50,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord (>= 3.0.10)
   bundler (~> 1.1.1)
+  countdownlatch
   database_cleaner
   jeweler (~> 1.8.3)
   rdoc (~> 3.12)
