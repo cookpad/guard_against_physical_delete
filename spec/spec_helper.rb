@@ -1,5 +1,13 @@
 require 'bundler'
-Bundler.setup
+Bundler.setup(:default, :development)
+
+if RUBY_VERSION >= '1.9.2'
+  require 'simplecov'
+
+  SimpleCov.start do
+    add_filter "/spec/"
+  end
+end
 
 require 'database'
 require 'guard_against_physical_delete'
