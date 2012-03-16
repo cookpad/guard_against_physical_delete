@@ -1,93 +1,89 @@
 require 'spec_helper'
-require 'thread'
+require 'countdownlatch'
 
-describe "Guard against physical delete" do
-  let(:physical) { Physical.create!(:name => "name") }
-  let(:logical) { Logical.create!(:name => "name") }
-  let(:logical2) { Logical.create!(:name => "name") }
-  let(:removed) { RemovedAtLogical.create!(:name => "name") }
-  describe 'logical delete table' do
-    it "raise exception" do
-      expect { logical.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
+shared_examples 'preventing physical delete' do
+  let(:model)         { model_class.create!(:name => "name") }
+  let(:another_model) { model_class.create!(:name => "name") }
+
+  describe '#delete' do
+    context 'without #physical_delete block' do
+      it { expect { model.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) }
     end
 
-    it 'raise exception by relation' do
-      expect { Logical.where(:id => logical.id).delete(logical.id) }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
-    end
+    describe 'with #physical_delete block' do
+      it { expect { model_class.physical_delete { model.delete } }.to_not raise_exception }
 
-    it 'raise exception with delete_all' do
-      expect { Logical.delete_all }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
-    end
-
-    it 'permit delete with thread' do
-      Logical.physical_delete do
-        expect { logical.delete }.to_not raise_exception
-      end
-    end
-
-    it 'nested permit delete' do
-      Logical.physical_delete do
-        Logical.physical_delete do
-          expect { logical.delete }.to_not raise_exception
-        end
-        expect { logical2.delete }.to_not raise_exception
-      end
-    end
-
-    it 'permit with thread' do
-      threads = []
-      mutex = Mutex.new
-      threads << Thread.new do
-        mutex.lock
-        Logical.physical_delete do
-          mutex.unlock
-          expect { logical.delete }.to_not raise_exception
-          mutex.lock
-        end
-        mutex.unlock
-        Logical.connection.close
+      it 'delete successufly with nesting block' do
+        expect {
+          model_class.physical_delete do
+            model_class.physical_delete { model.delete }
+            another_model.delete
+          end
+        }.to_not raise_exception
       end
 
-      threads << Thread.new do
-        mutex.synchronize do
-          expect { logical2.delete }.to raise_exception;
-          Logical.connection.close
+      context 'multi threading' do
+        it 'does not affect another thread' do
+          latch = CountDownLatch.new 1
+
+          threads = []
+          threads << Thread.new do
+            model_class.physical_delete do
+              latch.wait
+
+              expect { model.delete }.to_not raise_exception
+              model_class.connection.close
+            end
+          end
+
+          threads << Thread.new do
+            expect { another_model.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError)
+            model_class.connection.close
+
+            latch.countdown!
+          end
+
+          threads.map(&:join)
         end
       end
-      threads.map(&:join)
-    end
-
-
-    it 'specified column' do
-      RemovedAtLogical.logical_delete_column = :removed_at
-      expect { removed.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
-      expect { logical.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
     end
   end
 
-  describe 'physical delete table' do
-    it "no raise exception" do
-      expect { physical.delete }.to_not raise_exception
+  describe '#delete_all' do
+    context 'without #physical_delete block' do
+      it { expect { model_class.delete_all }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) }
     end
 
-    it 'conditional delete' do
-      physical1 = Physical.create!(:name => "name") 
-      physical2 = Physical.create!(:name => "name") 
-      expect {
-        Physical.delete_all(:id => physical1.id)
-      }.to change(Physical, :count).from(2).to(1)
+    context 'with #physical_delete block' do
+      it { expect { model_class.physical_delete { model_class.delete_all } }.not_to raise_exception }
     end
   end
+end
 
-  describe 'relation' do
-    let(:physical_has_logical) { Physical.create!(:name => "name", :logical_id => logical.id) }
+describe Logical do
+  let(:model_class) { Logical }
 
-    it 'raise exception by destroy' do
-      expect { physical_has_logical.destroy }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
-    end
+  it_should_behave_like 'preventing physical delete'
+end
 
-    it 'no raise exception by delete' do
-      expect { physical_has_logical.destroy }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) 
-    end
+describe RemovedAtLogical do
+  before { RemovedAtLogical.logical_delete_column = :removed_at }
+  let(:model_class) { RemovedAtLogical }
+
+  it_should_behave_like 'preventing physical delete'
+end
+
+describe Physical do
+  let(:model) { Physical.create!(:name => "name") }
+
+  describe '#delete' do
+    it { expect { model.delete }.not_to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) }
   end
+end
+
+describe ActiveRecord::Relation do
+  let!(:model) { Logical.create!(:name => "name") }
+
+  subject { Logical.where(:id => model.id) }
+  it { expect { subject.delete(model.id) }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) }
 end
