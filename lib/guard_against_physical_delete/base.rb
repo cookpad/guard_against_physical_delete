@@ -6,6 +6,7 @@ module GuardAgainstPhysicalDelete
         class_attribute :logical_delete_column
         self.logical_delete_column = :deleted_at
       end
+      obj.send(:include, InstanceMethods)
     end
 
     module ClassMethods
@@ -33,6 +34,16 @@ module GuardAgainstPhysicalDelete
 
       def physical_delete_permission
         Thread.current[THREAD_LOCAL_KEY] ||= Hash.new { |h,k| h[k] = 0 }
+      end
+    end
+
+    module InstanceMethods
+      def hard_delete
+        self.class.physical_delete { delete }
+      end
+
+      def soft_delete
+        self.touch(self.class.logical_delete_column)
       end
     end
   end

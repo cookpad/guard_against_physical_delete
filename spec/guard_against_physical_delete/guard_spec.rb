@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'countdownlatch'
 
 shared_examples 'preventing physical delete' do
-  let(:model)         { model_class.create!(:name => "name") }
+  let!(:model)        { model_class.create!(:name => "name") }
   let(:another_model) { model_class.create!(:name => "name") }
 
   describe '#delete' do
@@ -58,6 +58,20 @@ shared_examples 'preventing physical delete' do
       it { expect { model_class.physical_delete { model_class.delete_all } }.not_to raise_exception }
     end
   end
+
+  describe '#hard_delete' do
+    it 'do delete record' do
+      expect { model.hard_delete }.to change { model_class.where(:id => model.id).count }.from(1).to(0)
+    end
+  end
+
+  describe '#soft_delete' do
+    it 'set timestamp to delete flag' do
+      column = model_class.logical_delete_column
+      expect { model.soft_delete }.to change { model_class.where("#{column} is not null").count }.from(0).to(1)
+    end
+  end
+
 end
 
 describe Logical do
