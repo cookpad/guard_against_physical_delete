@@ -10,7 +10,7 @@ shared_examples 'preventing physical delete' do
       it { expect { model.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) }
     end
 
-    describe 'with #physical_delete block' do
+    context 'with #physical_delete block' do
       it { expect { model_class.physical_delete { model.delete } }.to_not raise_exception }
 
       it 'delete successufly with nesting block' do
