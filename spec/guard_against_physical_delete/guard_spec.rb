@@ -70,6 +70,11 @@ shared_examples 'preventing physical delete' do
       column = model_class.logical_delete_column
       expect { model.soft_delete }.to change { model_class.where("#{column} is not null").count }.from(0).to(1)
     end
+
+    it 'invokes after_save' do
+      model.soft_delete
+      model.should be_after_saved
+    end
   end
 
 end

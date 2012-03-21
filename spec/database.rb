@@ -6,10 +6,11 @@ require 'database_cleaner'
 
 class Logical < ::ActiveRecord::Base
   has_one :physical
+  after_save {|record| record.after_saved = true }
 end
 
 class RemovedAtLogical < ::ActiveRecord::Base
-
+  after_save {|record| record.after_saved = true }
 end
 
 class Physical < ::ActiveRecord::Base
@@ -18,8 +19,8 @@ end
 
 class CreateAllTables < ::ActiveRecord::Migration
   def self.up
-    create_table(:logicals) {|t| t.string :name; t.datetime :deleted_at }
-    create_table(:removed_at_logicals) {|t| t.string :name; t.datetime :removed_at }
+    create_table(:logicals) {|t| t.string :name; t.datetime :deleted_at; t.boolean :after_saved }
+    create_table(:removed_at_logicals) {|t| t.string :name; t.datetime :removed_at; t.boolean :after_saved }
     create_table(:physicals) {|t| t.string :name; t.integer :logical_id}
   end
 end
