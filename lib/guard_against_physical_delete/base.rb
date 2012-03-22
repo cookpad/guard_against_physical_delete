@@ -43,7 +43,8 @@ module GuardAgainstPhysicalDelete
       end
 
       def soft_delete
-        self.update_attribute(self.class.logical_delete_column, Time.now)
+        self.__send__(:"#{self.class.logical_delete_column}=", Time.now)
+        self.save!
       end
     end
   end

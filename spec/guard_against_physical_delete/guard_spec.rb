@@ -75,6 +75,11 @@ shared_examples 'preventing physical delete' do
       model.soft_delete
       model.should be_after_saved
     end
+
+    it 'validates fields' do
+      model.name = 'too long name'
+      expect { model.soft_delete }.to raise_exception(ActiveRecord::RecordInvalid)
+    end
   end
 
 end

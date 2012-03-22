@@ -6,10 +6,14 @@ require 'database_cleaner'
 
 class Logical < ::ActiveRecord::Base
   has_one :physical
+  validates_length_of :name, :maximum => 5
+
   after_save {|record| record.after_saved = true }
 end
 
 class RemovedAtLogical < ::ActiveRecord::Base
+  validates_length_of :name, :maximum => 5
+
   after_save {|record| record.after_saved = true }
 end
 
