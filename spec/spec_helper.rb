@@ -9,14 +9,13 @@ if RUBY_VERSION >= '1.9.2'
   end
 end
 
-require 'database'
 require 'guard_against_physical_delete'
+require 'database'
 
 RSpec.configure do |config|
   config.mock_with :rspec
 
   config.before(:suite) do
-    CreateAllTables.up unless ActiveRecord::Base.connection.table_exists? 'logicals'
     DatabaseCleaner.clean_with :deletion
     DatabaseCleaner.strategy = :deletion
   end
