@@ -32,13 +32,13 @@ shared_examples 'preventing physical delete' do
               latch.wait
 
               expect { model.delete }.to_not raise_exception
-              model_class.connection.close
+              model_class.connection.close if model_class.connection.respond_to?('close')
             end
           end
 
           threads << Thread.new do
             expect { another_model.delete }.to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError)
-            model_class.connection.close
+            model_class.connection.close if model_class.connection.respond_to?('close')
 
             latch.countdown!
           end
@@ -81,7 +81,6 @@ shared_examples 'preventing physical delete' do
       expect { model.soft_delete }.to raise_exception(ActiveRecord::RecordInvalid)
     end
   end
-
 end
 
 describe Logical do
@@ -91,7 +90,6 @@ describe Logical do
 end
 
 describe RemovedAtLogical do
-  before { RemovedAtLogical.logical_delete_column = :removed_at }
   let(:model_class) { RemovedAtLogical }
 
   it_should_behave_like 'preventing physical delete'
