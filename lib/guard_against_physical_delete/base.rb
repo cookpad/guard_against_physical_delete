@@ -4,12 +4,18 @@ module GuardAgainstPhysicalDelete
       obj.extend ClassMethods
       obj.class_eval do
         class_attribute :logical_delete_column
-        self.logical_delete_column = :deleted_at
+
+        class << self
+          alias_method :set_logical_delete_column, :logical_delete_column=
+        end
+
+        set_logical_delete_column :deleted_at
       end
       obj.send(:include, InstanceMethods)
     end
 
     module ClassMethods
+
       def physical_delete
         physical_delete_permission[self.name] += 1
         yield
@@ -39,7 +45,7 @@ module GuardAgainstPhysicalDelete
 
     module InstanceMethods
       def hard_delete
-        self.class.physical_delete { delete }
+        self.class.physical_delete { destroy }
       end
 
       def soft_delete
