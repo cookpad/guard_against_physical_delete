@@ -15,6 +15,6 @@ group :development do
   gem 'database_cleaner'
 
   gem 'rspec'
-  gem 'simplecov', :platforms => :ruby_19
+  gem 'simplecov', :platforms => [:ruby_19, :ruby_20, :ruby_21]
   gem 'countdownlatch'
 end
