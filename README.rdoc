@@ -12,6 +12,6 @@ active_record 3.0.10, >= 3.2
 
 == Copyright
 
-Copyright (c) 2012 morita shingo. See License.txt fo
+Copyright (c) 2012 morita shingo. See License.txt for
 further details.
 
