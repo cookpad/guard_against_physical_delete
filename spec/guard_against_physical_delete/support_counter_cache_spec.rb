@@ -5,7 +5,7 @@ describe GuardAgainstPhysicalDelete do
     let(:parent) { Parent.create! }
     let(:other_parent) { Parent.create! }
 
-    it 'update countter_cache with soft_delete' do
+    it 'update counter_cache with soft_delete' do
       parent.reload
       parent.send("#{children_association_name}_count").should == 2
 
@@ -15,7 +15,7 @@ describe GuardAgainstPhysicalDelete do
       parent.send("#{children_association_name}_count").should == 1
     end
 
-    it 'update countter_cache with hard_delete' do
+    it 'update counter_cache with hard_delete' do
       parent.reload
       parent.send("#{children_association_name}_count").should == 2
       child1.hard_delete
@@ -72,7 +72,7 @@ describe GuardAgainstPhysicalDelete do
     let!(:child1) { parent.children.create! }
     let!(:child2) { parent.children.create! }
 
-    it 'update countter_cache with hard_delete' do
+    it 'update counter_cache with hard_delete' do
       parent.reload
       parent.children_count.should == 2
       child1.destroy
