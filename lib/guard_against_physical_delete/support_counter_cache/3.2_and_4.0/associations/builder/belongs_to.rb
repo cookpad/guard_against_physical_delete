@@ -1,4 +1,4 @@
-module GuardAgainstPhysicalDelete 
+module GuardAgainstPhysicalDelete
   module SupportCounterCache
     module Associations
       module Builder
