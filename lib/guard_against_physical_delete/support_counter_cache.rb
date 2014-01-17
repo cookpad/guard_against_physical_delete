@@ -1,4 +1,7 @@
-if ActiveRecord::VERSION::STRING >= "3.2"
+if ActiveRecord::VERSION::STRING >= "4.1"
+  require 'guard_against_physical_delete/support_counter_cache/associations/builder/belongs_to'
+  ActiveRecord::Associations::Builder::BelongsTo.send(:include, GuardAgainstPhysicalDelete::SupportCounterCache::Associations::Builder::BelongsTo)
+elsif ActiveRecord::VERSION::STRING >= "3.2"
   require 'guard_against_physical_delete/support_counter_cache/3.2_and_4.0/associations/builder/belongs_to'
   ActiveRecord::Associations::Builder::BelongsTo.send(:include, GuardAgainstPhysicalDelete::SupportCounterCache::Associations::Builder::BelongsTo)
 elsif ActiveRecord::VERSION::STRING == "3.0.10"
