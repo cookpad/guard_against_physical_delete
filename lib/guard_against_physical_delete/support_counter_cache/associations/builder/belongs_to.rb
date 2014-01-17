@@ -25,6 +25,10 @@ module GuardAgainstPhysicalDelete
                   record.class.decrement_counter(cache_column, record.id) unless record.nil?
                 end
 
+                mixin.redefine_method("belongs_to_counter_cache_after_update_for_#{name}") do
+                  # do nothing
+                end if mixin.method_defined?("belongs_to_counter_cache_after_update_for_#{name}")
+
                 revive_method_name = "belongs_to_counter_cache_before_revive_for_#{name}".to_sym
 
                 mixin.redefine_method(revive_method_name) do
