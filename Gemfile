@@ -6,7 +6,7 @@ source "http://rubygems.org"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 gem 'activerecord', '>= 3.0.10'
-gem "bundler", "~> 1.1.1"
+gem "bundler"
 
 group :development do
   gem 'sqlite3'
