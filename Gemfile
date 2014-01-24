@@ -6,7 +6,7 @@ source "http://rubygems.org"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 gem 'activerecord', '>= 3.0.10'
-gem "bundler", "~> 1.1.1"
+gem "bundler"
 
 group :development do
   gem 'sqlite3'
@@ -15,6 +15,6 @@ group :development do
   gem 'database_cleaner'
 
   gem 'rspec'
-  gem 'simplecov', :platforms => :ruby_19
+  gem 'simplecov', :platforms => [:ruby_19, :ruby_20, :ruby_21]
   gem 'countdownlatch'
 end
