@@ -14,7 +14,7 @@ group :development do
   gem "jeweler", "~> 1.8.3"
   gem 'database_cleaner'
 
-  gem 'rspec'
+  gem 'rspec', '< 2.99'
   gem 'simplecov', :platforms => [:ruby_19, :ruby_20, :ruby_21]
   gem 'countdownlatch'
 end
