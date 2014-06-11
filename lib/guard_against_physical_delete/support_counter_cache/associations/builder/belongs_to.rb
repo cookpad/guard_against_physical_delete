@@ -43,6 +43,8 @@ module GuardAgainstPhysicalDelete
               def add_counter_cache_callbacks_with_logical_delete(model, reflection)
                 add_counter_cache_callbacks_without_logical_delete model, reflection
 
+                return unless model.logical_delete?
+
                 model.after_update lambda { |record|
                   record.belongs_to_counter_cache_after_logical_delete(reflection)
                   record.belongs_to_counter_cache_after_revive(reflection)
