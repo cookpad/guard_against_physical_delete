@@ -8,7 +8,6 @@ module GuardAgainstPhysicalDelete
               private
               def add_counter_cache_methods_with_logical_delete(mixin)
                 add_counter_cache_methods_without_logical_delete mixin
-                return unless mixin.logical_delete?
                 add_logical_delete_counter_cache_methods(mixin)
               end
               alias_method_chain :add_counter_cache_methods, :logical_delete
