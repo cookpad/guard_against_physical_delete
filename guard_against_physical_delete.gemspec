@@ -15,20 +15,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "README.rdoc"
   ]
-  s.files = [
-    "Gemfile",
-    "License.txt",
-    "README.rdoc",
-    "Rakefile",
-    "VERSION",
-    "lib/guard_against_physical_delete.rb",
-    "lib/guard_against_physical_delete/base.rb",
-    "lib/guard_against_physical_delete/physical_delete_error.rb",
-    "lib/guard_against_physical_delete/relation.rb",
-    "spec/database.rb",
-    "spec/guard_against_physical_delete/guard_spec.rb",
-    "spec/spec_helper.rb"
-  ]
+  s.files = `git ls-files`.split($\)
   s.homepage = "http://github.com/cookpad/guard_against_physical_delete"
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.15"
