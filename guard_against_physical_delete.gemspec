@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "README.rdoc"
   ]
-  s.files = `git ls-files`.split($\)
+  s.files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^spec/}) }
   s.homepage = "http://github.com/cookpad/guard_against_physical_delete"
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.15"
