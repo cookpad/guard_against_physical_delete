@@ -1,8 +1,7 @@
 require 'active_record'
 require 'database_cleaner'
 
-::ActiveRecord::Base.configurations = {'test' => {:adapter => 'sqlite3', :database => "test.db"}}
-::ActiveRecord::Base.establish_connection('test')
+::ActiveRecord::Base.establish_connection({:adapter => 'sqlite3', :database => "test.db"})
 
 class CreateAllTables < ::ActiveRecord::Migration
   def self.up
