@@ -8,7 +8,7 @@ set logical delete column name. (default is :deleted_at)
   Logical.physical_delete { Logical.first.delete } #=> allow physical_delete
 
 == Support
-active_record >= 5.0.0, < 5.2.0
+active_record >= 5.0.0, < 6.0.0
 
 == Copyright
 
