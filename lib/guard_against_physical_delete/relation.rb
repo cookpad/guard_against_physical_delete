@@ -5,12 +5,12 @@ module GuardAgainstPhysicalDelete
     end
 
     module MethodOverrides
-      def delete_all(conditions = nil)
+      def delete_all
         unless klass.delete_permitted?
           raise GuardAgainstPhysicalDelete::PhysicalDeleteError, klass.name
         end
 
-        super(conditions)
+        super
       end
     end
   end
