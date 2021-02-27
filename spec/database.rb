@@ -3,7 +3,7 @@ require 'database_cleaner'
 
 ::ActiveRecord::Base.establish_connection({:adapter => 'sqlite3', :database => "test.db"})
 
-class CreateAllTables < ::ActiveRecord::Migration
+class CreateAllTables < ::ActiveRecord::Migration[5.0]
   def self.up
     create_table(:logicals) {|t| t.string :name; t.datetime :deleted_at; t.boolean :after_saved }
     create_table(:removed_at_logicals) {|t| t.string :name; t.datetime :removed_at; t.boolean :after_saved }
@@ -14,7 +14,7 @@ class CreateAllTables < ::ActiveRecord::Migration
     create_table(:removed_at_children) {|t| t.string :name; t.integer :parent_id; t.datetime :removed_at }
   end
 end
-CreateAllTables.up unless ActiveRecord::Base.connection.table_exists? 'logicals'
+CreateAllTables.up unless ActiveRecord::Base.connection.data_source_exists? 'logicals'
 
 class Logical < ::ActiveRecord::Base
   has_one :physical
