@@ -36,7 +36,7 @@ module GuardAgainstPhysicalDelete
       private
 
       THREAD_LOCAL_KEY = :__GuardAgainstPhysicalDelete__thread_local_permission__
-      private_constant :THREAD_LOCAL_KEY if RUBY_VERSION >= '1.9.3'
+      private_constant :THREAD_LOCAL_KEY
 
       def physical_delete_permission
         Thread.current[THREAD_LOCAL_KEY] ||= Hash.new { |h,k| h[k] = 0 }

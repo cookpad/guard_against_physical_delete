@@ -1,12 +1,9 @@
 require 'bundler'
 Bundler.setup(:default, :development)
 
-if RUBY_VERSION >= '1.9.2'
-  require 'simplecov'
-
-  SimpleCov.start do
-    add_filter "/spec/"
-  end
+require 'simplecov'
+SimpleCov.start do
+  add_filter "/spec/"
 end
 
 require 'guard_against_physical_delete'
@@ -24,4 +21,3 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 end
-
