@@ -7,20 +7,20 @@ describe GuardAgainstPhysicalDelete do
 
     it 'update counter_cache with soft_delete' do
       parent.reload
-      parent.send("#{children_association_name}_count").should == 2
+      expect(parent.send("#{children_association_name}_count")).to eq(2)
 
       child1.soft_delete
 
       parent.reload
-      parent.send("#{children_association_name}_count").should == 1
+      expect(parent.send("#{children_association_name}_count")).to eq(1)
     end
 
     it 'update counter_cache with hard_delete' do
       parent.reload
-      parent.send("#{children_association_name}_count").should == 2
+      expect(parent.send("#{children_association_name}_count")).to eq(2)
       child1.hard_delete
       parent.reload
-      parent.send("#{children_association_name}_count").should == 1
+      expect(parent.send("#{children_association_name}_count")).to eq(1)
     end
 
     it 'dont calc soft deleted record with updating' do
@@ -28,24 +28,24 @@ describe GuardAgainstPhysicalDelete do
       child1.update_attributes(:name => 'alice')
 
       parent.reload
-      parent.send("#{children_association_name}_count").should == 1
+      expect(parent.send("#{children_association_name}_count")).to eq(1)
     end
 
     it 'calc revived record' do
       child1.soft_delete
       child1.update_attributes!(logical_delete_column_name => nil)
       parent.reload
-      parent.send("#{children_association_name}_count").should == 2
+      expect(parent.send("#{children_association_name}_count")).to eq(2)
     end
 
     it 'calc revived record with changing parent' do
       child1.soft_delete
       child1.update_attributes!(logical_delete_column_name => nil, :parent_id => other_parent.id)
       parent.reload
-      parent.send("#{children_association_name}_count").should == 1
+      expect(parent.send("#{children_association_name}_count")).to eq(1)
 
       other_parent.reload
-      other_parent.send("#{children_association_name}_count").should == 1
+      expect(other_parent.send("#{children_association_name}_count")).to eq(1)
     end
   end
 
@@ -74,10 +74,10 @@ describe GuardAgainstPhysicalDelete do
 
     it 'update counter_cache with hard_delete' do
       parent.reload
-      parent.children_count.should == 2
+      expect(parent.children_count).to eq(2)
       child1.destroy
       parent.reload
-      parent.children_count.should == 1
+      expect(parent.children_count).to eq(1)
     end
   end
 end

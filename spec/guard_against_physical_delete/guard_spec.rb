@@ -73,7 +73,7 @@ shared_examples 'preventing physical delete' do
 
     it 'invokes after_save' do
       model.soft_delete
-      model.should be_after_saved
+      expect(model).to be_after_saved
     end
 
     it 'validates fields' do
@@ -99,7 +99,7 @@ describe Physical do
   let(:model) { Physical.create!(:name => "name") }
 
   describe '#delete' do
-    it { expect { model.delete }.not_to raise_exception(GuardAgainstPhysicalDelete::PhysicalDeleteError) }
+    it { expect { model.delete }.to_not raise_exception }
   end
 end
 
