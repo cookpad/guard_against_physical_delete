@@ -1,15 +1,16 @@
 module GuardAgainstPhysicalDelete
   module Relation
-    def self.included(obj)
-      obj.class_eval do
-        def delete_all_with_check_permit(conditions = nil)
-          unless @klass.delete_permitted?
-            raise GuardAgainstPhysicalDelete::PhysicalDeleteError, @klass.name
-          end
-          delete_all_without_check_permit(conditions)
+    def self.included(base)
+      base.prepend MethodOverrides
+    end
+
+    module MethodOverrides
+      def delete_all(conditions = nil)
+        unless klass.delete_permitted?
+          raise GuardAgainstPhysicalDelete::PhysicalDeleteError, klass.name
         end
 
-        alias_method_chain :delete_all, :check_permit
+        super(conditions)
       end
     end
   end

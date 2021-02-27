@@ -5,12 +5,9 @@ module GuardAgainstPhysicalDelete
         module BelongsTo
           def self.included(obj)
             class << obj
+              prepend MethodOverrides
+
               private
-              def add_counter_cache_methods_with_logical_delete(mixin)
-                add_counter_cache_methods_without_logical_delete mixin
-                add_logical_delete_counter_cache_methods(mixin)
-              end
-              alias_method_chain :add_counter_cache_methods, :logical_delete
 
               def add_logical_delete_counter_cache_methods(mixin)
                 mixin.class_eval do
@@ -38,18 +35,26 @@ module GuardAgainstPhysicalDelete
                   # do nothing
                 end if mixin.method_defined?("belongs_to_counter_cache_after_update_for_#{name}")
               end
+            end
+          end
+        end
 
-              def add_counter_cache_callbacks_with_logical_delete(model, reflection)
-                add_counter_cache_callbacks_without_logical_delete model, reflection
+        module MethodOverrides
+          private
 
-                return unless model.logical_delete?
+          def add_counter_cache_methods(mixin)
+            super(mixin)
+            add_logical_delete_counter_cache_methods(mixin)
+          end
 
-                model.after_update lambda { |record|
-                  record.belongs_to_counter_cache_after_logical_delete(reflection)
-                  record.belongs_to_counter_cache_after_revive(reflection)
-                }
-              end
-              alias_method_chain :add_counter_cache_callbacks, :logical_delete
+          def add_counter_cache_callbacks(model, reflection)
+            super(model, reflection)
+
+            return unless model.logical_delete?
+
+            model.after_update -> record do
+              record.belongs_to_counter_cache_after_logical_delete(reflection)
+              record.belongs_to_counter_cache_after_revive(reflection)
             end
           end
         end
