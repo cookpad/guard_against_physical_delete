@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.15"
   s.summary = "Guard against physical delete"
 
-  s.add_runtime_dependency "activerecord", ">= 3.0.10", "< 5.1.0"
+  s.add_runtime_dependency "activerecord", ">= 4.1.0", "< 5.1.0"
   s.add_development_dependency "rake", "~> 13"
   s.add_development_dependency "rspec", "~> 3"
   s.add_development_dependency "sqlite3", "~> 1.3.6"
