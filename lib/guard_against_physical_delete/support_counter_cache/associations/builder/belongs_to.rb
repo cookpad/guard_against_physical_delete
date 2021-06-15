@@ -41,7 +41,7 @@ module GuardAgainstPhysicalDelete
                     end
                   else
                     def saved_change_to_logical_delete_column?(delete_column)
-                      __send__("saved_change_to_#{delete_column}")
+                      __send__("saved_change_to_#{delete_column}?")
                     end
 
                     def logical_delete_column_before_last_save(delete_column)
