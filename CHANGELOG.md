@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Support activerecord 6.0.
+
 ### Fixed
 
 - Fix bug that it doesn't guard `#destroy` on activerecord 5.2.
