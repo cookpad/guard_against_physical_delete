@@ -9,16 +9,12 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["MORITA shingo"]
   s.date = "2012-03-06"
-  s.description = "Guard against physical delete"
   s.email = "morita@cookpad.com"
-  s.extra_rdoc_files = [
-    "README.rdoc"
-  ]
   s.files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^spec/}) }
   s.homepage = "http://github.com/cookpad/guard_against_physical_delete"
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.15"
-  s.summary = "Guard against physical delete"
+  s.summary = "A monkey patch for ActiveRecord to prevent physical deletion."
 
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/master/CHANGELOG.md"
   spec.metadata["homepage_uri"] = spec.homepage
