@@ -3,4 +3,3 @@ test.db
 coverage
 pkg
 rdoc
-Gemfile.lock

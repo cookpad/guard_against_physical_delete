@@ -1,0 +1,28 @@
+name: master & PR
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rails_version:
+          - "5.0"
+          - "5.1"
+          - "5.2"
+    name: Test on Rails ${{ matrix.rails_version }}
+    env:
+      BUNDLE_GEMFILE: gemfiles/Gemfile_rails_${{ matrix.rails_version }}.rb
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+        bundler-cache: true
+    - name: rspec
+      run: bundle exec rspec
