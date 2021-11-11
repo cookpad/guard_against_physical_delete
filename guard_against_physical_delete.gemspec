@@ -20,6 +20,10 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.15"
   s.summary = "Guard against physical delete"
 
+  spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/master/CHANGELOG.md"
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+
   s.add_runtime_dependency "activerecord", "~> 5"
   s.add_development_dependency "rake", "~> 13"
   s.add_development_dependency "rspec", "~> 3"
