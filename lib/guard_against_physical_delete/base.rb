@@ -45,6 +45,16 @@ module GuardAgainstPhysicalDelete
     end
 
     module InstanceMethods
+      if ::ActiveRecord.version >= ::Gem::Version.new('5.2')
+        def _delete_row
+          unless self.class.delete_permitted?
+            raise ::GuardAgainstPhysicalDelete::PhysicalDeleteError, self.class.name
+          end
+
+          super
+        end
+      end
+
       def hard_delete
         self.class.physical_delete { destroy }
       end
