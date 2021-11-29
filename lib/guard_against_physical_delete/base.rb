@@ -12,7 +12,6 @@ module GuardAgainstPhysicalDelete
         set_logical_delete_column :deleted_at
       end
       obj.send(:include, InstanceMethods)
-      obj.prepend MethodOverrides if ActiveRecord.version >= Gem::Version.new('5.2.0') # #delete no longer calls Relation#delete_all
     end
 
     module ClassMethods
@@ -45,6 +44,16 @@ module GuardAgainstPhysicalDelete
     end
 
     module InstanceMethods
+      if ::ActiveRecord.version >= ::Gem::Version.new('5.2')
+        def _delete_row
+          unless self.class.delete_permitted?
+            raise ::GuardAgainstPhysicalDelete::PhysicalDeleteError, self.class.name
+          end
+
+          super
+        end
+      end
+
       def hard_delete
         self.class.physical_delete { destroy }
       end
@@ -52,16 +61,6 @@ module GuardAgainstPhysicalDelete
       def soft_delete
         self.__send__(:"#{self.class.logical_delete_column}=", Time.now)
         self.save!
-      end
-    end
-
-    module MethodOverrides
-      def delete
-        unless self.class.delete_permitted?
-          raise GuardAgainstPhysicalDelete::PhysicalDeleteError, self.class.name
-        end
-
-        super
       end
     end
   end

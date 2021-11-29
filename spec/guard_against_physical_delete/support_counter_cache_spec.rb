@@ -1,83 +1,133 @@
 require 'spec_helper'
 
 describe GuardAgainstPhysicalDelete do
-  shared_examples_for 'counter cache' do
-    let(:parent) { Parent.create! }
-    let(:other_parent) { Parent.create! }
+  let(:parent) do
+    Parent.create!
+  end
 
-    it 'update counter_cache with soft_delete' do
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(2)
-
-      child1.soft_delete
-
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(1)
+  context 'when child is physically deleted' do
+    subject do
+      child.destroy
     end
 
-    it 'update counter_cache with hard_delete' do
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(2)
-      child1.hard_delete
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(1)
+    let!(:child) do
+      parent.children.create!
     end
 
-    it 'dont calc soft deleted record with updating' do
-      child1.soft_delete
-      child1.update_attributes(:name => 'alice')
-
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(1)
-    end
-
-    it 'calc revived record' do
-      child1.soft_delete
-      child1.update_attributes!(logical_delete_column_name => nil)
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(2)
-    end
-
-    it 'calc revived record with changing parent' do
-      child1.soft_delete
-      child1.update_attributes!(logical_delete_column_name => nil, :parent_id => other_parent.id)
-      parent.reload
-      expect(parent.send("#{children_association_name}_count")).to eq(1)
-
-      other_parent.reload
-      expect(other_parent.send("#{children_association_name}_count")).to eq(1)
+    it 'decrements counter' do
+      expect { subject }.to change { parent.reload.children_count }.from(1).to(0)
     end
   end
 
-  context 'deleted_at child' do
-    let!(:child1) { parent.deleted_at_children.create! }
-    let!(:child2) { parent.deleted_at_children.create! }
-    let(:logical_delete_column_name) { 'deleted_at' }
-    let(:children_association_name) { 'deleted_at_children' }
+  context 'when deleted_at child is physically deleted' do
+    subject do
+      child.delete
+    end
 
-    it_should_behave_like 'counter cache'
+    let!(:child) do
+      parent.deleted_at_children.create!
+    end
+
+    it 'raises error' do
+      expect { subject }.to raise_error(GuardAgainstPhysicalDelete::PhysicalDeleteError)
+    end
   end
 
-  context 'removed_at child' do
-    let!(:child1) { parent.removed_at_children.create! }
-    let!(:child2) { parent.removed_at_children.create! }
-    let(:logical_delete_column_name) { 'removed_at' }
-    let(:children_association_name) { 'removed_at_children' }
+  context 'when removed_at child is physically deleted' do
+    subject do
+      child.delete
+    end
 
-    it_should_behave_like 'counter cache'
+    let!(:child) do
+      parent.removed_at_children.create!
+    end
+
+    it 'raises error' do
+      expect { subject }.to raise_error(GuardAgainstPhysicalDelete::PhysicalDeleteError)
+    end
   end
 
-  context 'phisical delete' do
-    let(:parent) { Parent.create! }
-    let!(:child1) { parent.children.create! }
-    let!(:child2) { parent.children.create! }
+  context 'when deleted_at child is logically deleted' do
+    subject do
+      child.soft_delete
+    end
 
-    it 'update counter_cache with hard_delete' do
-      parent.reload
-      expect(parent.children_count).to eq(2)
-      child1.destroy
-      parent.reload
-      expect(parent.children_count).to eq(1)
+    let!(:child) do
+      parent.deleted_at_children.create!
+    end
+
+    it 'decrements counter' do
+      expect { subject }.to change { parent.reload.deleted_at_children_count }.from(1).to(0)
+    end
+  end
+
+  context 'when removed_at child is logically deleted' do
+    subject do
+      child.soft_delete
+    end
+
+    let!(:child) do
+      parent.removed_at_children.create!
+    end
+
+    it 'decrements counter' do
+      expect { subject }.to change { parent.reload.removed_at_children_count }.from(1).to(0)
+    end
+  end
+
+  context 'when logically deleted deleted_at child is updated' do
+    subject do
+      child.update!(name: 'dummy_name')
+    end
+
+    let!(:child) do
+      parent.deleted_at_children.create!.tap(&:soft_delete)
+    end
+
+    it 'does not change counter' do
+      expect { subject }.not_to change { parent.reload.deleted_at_children_count }
+    end
+  end
+
+  context 'when logically deleted removed_at child is updated' do
+    subject do
+      child.update!(name: 'dummy_name')
+    end
+
+    let!(:child) do
+      parent.removed_at_children.create!.tap(&:soft_delete)
+    end
+
+    it 'does not change counter' do
+      expect { subject }.not_to change { parent.reload.removed_at_children_count }
+    end
+  end
+
+  context 'when logically deleted deleted_at child is logically undeleted' do
+    subject do
+      child.update!(deleted_at: nil)
+    end
+
+    let!(:child) do
+      parent.deleted_at_children.create!.tap(&:soft_delete)
+    end
+
+    it 'increments counter' do
+      expect { subject }.to change { parent.reload.deleted_at_children_count }.from(0).to(1)
+    end
+  end
+
+  context 'when logically deleted removed_at child is logically undeleted' do
+    subject do
+      child.update!(removed_at: nil)
+    end
+
+    let!(:child) do
+      parent.removed_at_children.create!.tap(&:soft_delete)
+    end
+
+    it 'increments counter' do
+      expect { subject }.to change { parent.reload.removed_at_children_count }.from(0).to(1)
     end
   end
 end

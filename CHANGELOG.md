@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fix bug that it doesn't guard `#destroy` on activerecord 5.2.
+
 ## 2.0.0 - 2021-08-04
 
 ### Added
