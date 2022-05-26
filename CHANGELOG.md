@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.1 - 2022-05-26
+
 ### Added
 
 - Support activerecord 6.1.
