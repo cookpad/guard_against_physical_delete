@@ -12,12 +12,12 @@ module GuardAgainstPhysicalDelete
               def add_logical_delete_counter_cache_methods(mixin)
                 mixin.class_eval do
                   def adjust_counter_caches_for_logical_deletion(reflection)
-                    if attribute_before_last_save(logical_delete_column).nil? && attribute(logical_delete_column)
+                    if attribute_before_last_save(logical_delete_column).nil? && read_attribute(logical_delete_column)
                       reflection.klass.decrement_counter(
                         reflection.counter_cache_column,
                         attribute_before_last_save(reflection.foreign_key)
                       )
-                    elsif attribute_before_last_save(logical_delete_column) && attribute(logical_delete_column).nil?
+                    elsif attribute_before_last_save(logical_delete_column) && read_attribute(logical_delete_column).nil?
                       reflection.klass.increment_counter(
                         reflection.counter_cache_column,
                         attribute_before_last_save(reflection.foreign_key)

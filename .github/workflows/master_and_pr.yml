@@ -16,6 +16,7 @@ jobs:
           - "5.1"
           - "5.2"
           - "6.0"
+          - "6.1"
     name: Test on Rails ${{ matrix.rails_version }}
     env:
       BUNDLE_GEMFILE: gemfiles/Gemfile_rails_${{ matrix.rails_version }}.rb
