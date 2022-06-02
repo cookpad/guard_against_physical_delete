@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    guard_against_physical_delete (2.1.0)
+    guard_against_physical_delete (2.1.1)
       activerecord (>= 5, < 6.2)
 
 GEM
