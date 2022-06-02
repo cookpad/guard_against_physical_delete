@@ -1,5 +1,7 @@
 # guard_against_physical_delete
 
+[![test](https://github.com/cookpad/guard_against_physical_delete/actions/workflows/test.yml/badge.svg)](https://github.com/cookpad/guard_against_physical_delete/actions/workflows/test.yml)
+
 [![Gem Version](https://badge.fury.io/rb/guard_against_physical_delete.svg)](https://rubygems.org/gems/guard_against_physical_delete)
 
 A monkey patch for ActiveRecord to prevent physical deletion.
