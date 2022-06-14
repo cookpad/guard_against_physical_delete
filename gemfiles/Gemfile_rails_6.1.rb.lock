@@ -2,7 +2,7 @@ PATH
   remote: ..
   specs:
     guard_against_physical_delete (2.1.1)
-      activerecord (>= 5, < 6.2)
+      activerecord (>= 5, < 7.1)
 
 GEM
   remote: https://rubygems.org/
